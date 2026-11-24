@@ -1,0 +1,31 @@
+# Environments & Secrets
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Local Medallion Store & SQLite WAL Database
+data/bronze/*
+data/silver/*
+data/gold/*
+data/*.db
+data/*.db-wal
+data/*.db-shm
+!data/bronze/.gitkeep
+!data/silver/.gitkeep
+!data/gold/.gitkeep
+
+# Local Model Weights & Artifacts
+models_cache/
+*.joblib
+*.pkl
+
+# Frontend Build Artifacts
+frontend/node_modules/
+frontend/dist/
