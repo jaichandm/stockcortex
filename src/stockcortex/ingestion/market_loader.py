@@ -210,3 +210,15 @@ class MarketDataLoader:
         for sym in target_symbols:
             outputs[sym] = self.ingest_symbol(sym, period=period)
         return outputs
+
+    def ingest_nifty50_benchmark(self, period: str = "5y") -> Path:
+        """Fetches NIFTY 50 (^NSEI) daily bars into Silver Parquet for rolling Beta and Relative Strength."""
+        hist = yf.Ticker("^NSEI").history(period=period, interval="1d", auto_adjust=True)
+        raw_df = self._normalize_yfinance_df(hist, symbol="NIFTY50", ticker_used="^NSEI")
+        if raw_df.empty:
+            raise RuntimeError("Failed to fetch NIFTY 50 (^NSEI) benchmark data")
+
+        ts_tag = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        self.duck.write_parquet(raw_df, self.bronze_dir / f"NIFTY50_ohlcv_{ts_tag}.parquet")
+        silver_df = self.clean_and_validate_silver(raw_df, symbol="NIFTY50", provider="yfinance_index")
+        return self.duck.write_parquet(silver_df, self.silver_dir / "NIFTY50_ohlcv.parquet")
